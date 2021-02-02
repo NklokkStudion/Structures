@@ -1,0 +1,33 @@
+struct DSU
+{
+    vector<int> parent;
+    vector<int> sz;
+    DSU()
+    {
+        parent.resize(N);
+        sz.resize(N);
+        for(int i=0;i<N;i++){
+            parent[i]=i;
+            sz[i]=1;
+        }
+    }
+    int find_set(int v)
+    {
+        if(parent[v]==v) return v;
+        return parent[v]=find_set(parent[v]);
+    }
+    void merge_set(int a, int b)
+    {
+        a = find_set(a);
+        b = find_set(b);
+        if(a!=b){
+            if(sz[a]<sz[b]) swap(a,b);
+            parent[b]=a;
+            sz[a]+=sz[b];
+        } 
+    }
+    bool good(int a, int b)
+    {
+        return find_set(a)==find_set(b);
+    }
+};

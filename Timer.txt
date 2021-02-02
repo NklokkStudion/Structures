@@ -1,0 +1,6 @@
+struct Timer
+{
+    string name; clock_t tm;
+    Timer(string name) : name(name), tm(clock()){}
+    ~Timer(){cout<<name<<" : "<<(long double)(clock()-tm)/(long double)CLOCKS_PER_SEC<<endl;}
+};

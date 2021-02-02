@@ -1,0 +1,85 @@
+#include <algorithm>
+#include <stdexcept>
+#include <tuple>
+#include <vector>
+
+// Solve with Julian date
+class Date {
+ private:
+    int day;
+    static inline const std::vector<int> daysInMonth =
+     {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+ public:
+    Date(int _day, int _month, int _year) {
+        if (!is_valid(_day, _month, _year)) {
+            throw std::invalid_argument("Bad date");
+        }
+        int JDN1 = get_JDN(_day, _month, _year);
+        int JDN2 = get_JDN(1, 1, 1970);
+        day = JDN1 - JDN2;
+    }
+    static int get_JDN(int _day, int _month, int _year) {
+        int a = (14 - _month) / 12;
+        int y = _year + 4800 - a;
+        int m = _month + 12 * a - 3;
+        int JDN = _day + (153 * m + 2) / 5 + 365 * y + y / 4
+                  - y / 100 + y / 400 - 32045;
+        return JDN;
+    }
+    static bool is_leap(int y) {
+        return y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+    }
+    static bool is_valid(int _day, int _month, int _year) {
+        if (_year < 0) return false;
+        if (_month < 1 || _month > 12) return false;
+        bool leap = (_month == 2 && is_leap(_year));
+        if (_day < 1 || _day > daysInMonth[_month - 1] + leap) return false;
+        return true;
+    }
+    int GetDaysFromStart() const {
+        return day;
+    }
+    std::tuple<int, int, int> getDate() const {
+        int a = day + get_JDN(1, 1, 1970) + 32044;
+        int b = (4 * a + 3) / 146097;
+        int c = a - (146097 * b) / 4;
+        int d = (4 * c + 3) / 1461;
+        int e = c - (1461 * d) / 4;
+        int m = (5 * e + 2) / 153;
+        return std::make_tuple(e - (153 * m + 2) / 5 + 1,
+                               m + 3 - 12 * (m / 10),
+                               100 * b + d - 4800 + (m / 10));
+    }
+    int GetDay() const {
+        return std::get<0>(getDate());
+    }
+    int GetMonth() const {
+        return std::get<1>(getDate());
+    }
+    int GetYear() const {
+        return std::get<2>(getDate());
+    }
+    Date& operator++() {
+        ++day;
+        return *this;
+    }
+    Date operator+(int days) const {
+        Date ans = *this;
+        ans.day += days;
+        return ans;
+    }
+    Date& operator--() {
+        --day;
+        return *this;
+    }
+    Date operator-(int days) const {
+        Date ans = *this;
+        ans.day -= days;
+        return ans;
+    }
+};
+
+int operator-(Date d1, Date d2) {
+    return d1.GetDaysFromStart() - d2.GetDaysFromStart();
+}

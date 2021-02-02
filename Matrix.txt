@@ -1,0 +1,97 @@
+struct Matrix {
+    size_t rows, columns;
+    std::vector<std::vector<int64_t>> table;
+    Matrix(size_t rows, size_t columns) : rows(rows), columns(columns) {
+        table.resize(rows, std::vector<int64_t>(columns));
+    }
+    Matrix(std::vector<std::vector<int64_t>> v) {
+        rows = v.size();
+        columns = v[0].size();
+        table = v;
+    }
+    std::vector<int64_t>& operator[](size_t idx) {
+        return table[idx];
+    }
+    Matrix operator+(Matrix& other) {
+        Matrix c(rows, columns);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < columns; ++j) {
+                c[i][j] = table[i][j] + other[i][j];
+            }
+        }
+        return c;
+    }
+    Matrix operator-(Matrix& other) {
+        Matrix c(rows, columns);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < columns; ++j) {
+                c[i][j] = table[i][j] - other[i][j];
+            }
+        }
+        return c;
+    }
+    Matrix operator*(Matrix& other) {
+        Matrix c(rows, other.columns);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < other.columns; ++j) {
+                for (size_t k = 0; k < columns; ++k) {
+                    c[i][j] += table[i][k] * other[k][j];
+                }
+            }
+        }
+        return c;
+    }
+    Matrix operator*(int64_t val) {
+        Matrix c(rows, columns);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < columns; ++j) {
+                c[i][j] = table[i][j] * val;
+            }
+        }
+        return c;
+    }
+};
+
+void Print(Matrix a) {
+    for (size_t i = 0; i < a.rows; ++i) {
+        for (size_t j = 0; j < a.columns; ++j) {
+            std::cout << a.table[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+Matrix Pow(Matrix a, int pow) {
+    if (pow == 1) {
+        return a;
+    }
+    if (pow % 2 == 0) {
+        Matrix c = Pow(a, pow / 2);
+        return c * c;
+    } else {
+        Matrix c = Pow(a, pow - 1);
+        return a * c;
+    }
+}
+
+Matrix T(Matrix a) {
+    Matrix c(a.columns, a.rows);
+    for (size_t i = 0; i < a.rows; ++i) {
+        for (size_t j = 0; j < a.columns; ++j) {
+            c[j][i] = a.table[i][j];
+        }
+    }
+    return c;
+}
+
+int Tr(Matrix a) {
+    int64_t sum = 0;
+    for (size_t i = 0; i < a.rows; ++i) {
+        for (size_t j = 0; j < a.columns; ++j) {
+            if (i == j) {
+                sum += a.table[i][j];
+            }
+        }
+    }
+    return sum;
+}
