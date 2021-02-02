@@ -1,0 +1,93 @@
+#include <algorithm>
+#include <iostream>
+#include <math.h>
+
+class Complex {
+ private:
+    double re, im;
+
+ public:
+    Complex(double _re, double _im = 0) : re(_re), im(_im) {}
+    Complex operator+(Complex other) {
+        return Complex(re + other.re, im + other.im);
+    }
+    Complex operator-(Complex other) {
+        return Complex(re - other.re, im - other.im);
+    }
+    Complex operator*(Complex other) {
+        double i = re * other.re - im * other.im;
+        double j = re * other.im + other.re * im;
+        return Complex(i, j);
+    }
+    Complex operator/(Complex other) {
+        double i, j, k;
+        k = other.re * other.re + other.im * other.im;
+        i = (re * other.re + im * other.im) / k;
+        j = (other.re * im - re * other.im) / k;
+        return Complex(i, j);
+    }
+    Complex& operator+=(Complex other) {
+        re += other.re;
+        im += other.im;
+        return *this;
+    }
+    Complex& operator-=(Complex other) {
+        re -= other.re;
+        im -= other.im;
+        return *this;
+    }
+    Complex& operator*=(Complex other) {
+        double i = re * other.re - im * other.im;
+        double j = re * other.im + other.re * im;
+        re = i;
+        im = j;
+        return *this;
+    }
+    Complex& operator/=(Complex other) {
+        double i, j, k;
+        k = other.re * other.re + other.im * other.im;
+        i = (re * other.re + im * other.im) / k;
+        j = (other.re * im - re * other.im) / k;
+        re = i;
+        im = j;
+        return *this;
+    }
+    Complex operator-() {
+        return Complex(-re, -im);
+    }
+    Complex operator+() {
+        return Complex(re, im);
+    }
+    bool operator==(Complex other) {
+        return (re == other.re && im == other.im);
+    }
+    bool operator!=(Complex other) {
+        return (re != other.re || im != other.im);
+    }
+    double Re() const {
+        return re;
+    }
+    double Im() const {
+        return im;
+    }
+};
+
+Complex operator+(double x, Complex c) {
+    return Complex(x) + c;
+}
+
+Complex operator-(double x, Complex c) {
+    return Complex(x) - c;
+}
+
+Complex operator*(double x, Complex c) {
+    return Complex(x) * c;
+}
+
+Complex operator/(double x, Complex c) {
+    return Complex(x) / c;
+}
+
+double abs(Complex c) {
+    return std::sqrt(c.Re() * c.Re() + c.Im() * c.Im());
+}
